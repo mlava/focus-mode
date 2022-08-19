@@ -38,13 +38,18 @@ export default {
     onload: ({ extensionAPI }) => {
         extensionAPI.settings.panel.create(config);
         window.roamAlphaAPI.ui.commandPalette.addCommand({
-            label: "Focus Mode On",
-            callback: () => focusModeOn()
+            label: "Toggle Focus Mode",
+            callback: () => focusModeToggle()
         });
-        window.roamAlphaAPI.ui.commandPalette.addCommand({
-            label: "Focus Mode Off",
-            callback: () => focusModeOff()
-        });
+        var focusModeState = false;
+
+        async function focusModeToggle() {
+            if (focusModeState == false) {
+                focusModeOn();
+            } else {
+                focusModeOff();
+            }
+        }
 
         async function focusModeOn() {
             var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmRefs;
@@ -93,6 +98,7 @@ export default {
             for (var i = 1; i < matches.length; i++) {
                 matches[i].style.visibility = "hidden";
             }
+            focusModeState = true;
         }
 
         async function focusModeOff() {
@@ -105,14 +111,12 @@ export default {
             for (var i = 1; i < matches.length; i++) {
                 matches[i].style.visibility = "visible";
             }
+            focusModeState = false;
         }
     },
     onunload: () => {
         window.roamAlphaAPI.ui.commandPalette.removeCommand({
-            label: 'Focus Mode On'
-        });
-        window.roamAlphaAPI.ui.commandPalette.removeCommand({
-            label: 'Focus Mode Off'
+            label: 'Toggle Focus Mode'
         });
     }
 }
