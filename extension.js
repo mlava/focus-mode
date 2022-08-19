@@ -115,6 +115,7 @@ export default {
         }
     },
     onunload: () => {
+        focusModeOff();
         window.roamAlphaAPI.ui.commandPalette.removeCommand({
             label: 'Toggle Focus Mode'
         });
