@@ -94,8 +94,7 @@ async function focusModeOn({ extensionAPI }) {
         document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "hidden";
     }
     if (fmLeftSidebar == false) {
-        document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "hidden";
-        document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "hidden";
+        await roamAlphaAPI.ui.leftSidebar.close();
     }
     if (fmRightSidebar == false) {
         await roamAlphaAPI.ui.rightSidebar.close();
@@ -110,7 +109,7 @@ async function focusModeOn({ extensionAPI }) {
     focusModeState = true;
 }
 
-function focusModeOff() {
+async function focusModeOff() {
     document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "visible";
     document.querySelector("div.rm-reference-main").style.visibility = "visible";
     document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "visible";
@@ -120,5 +119,6 @@ function focusModeOff() {
     for (var i = 1; i < matches.length; i++) {
         matches[i].style.visibility = "visible";
     }
+    await roamAlphaAPI.ui.leftSidebar.open();
     focusModeState = false;
 }
