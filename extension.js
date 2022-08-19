@@ -34,90 +34,91 @@ const config = {
     ]
 };
 
+var focusModeState;
 export default {
     onload: ({ extensionAPI }) => {
         extensionAPI.settings.panel.create(config);
         window.roamAlphaAPI.ui.commandPalette.addCommand({
             label: "Toggle Focus Mode",
-            callback: () => focusModeToggle()
+            callback: () => focusModeToggle({ extensionAPI })
         });
-        var focusModeState = false;
-
-        async function focusModeToggle() {
-            if (focusModeState == false) {
-                focusModeOn();
-            } else {
-                focusModeOff();
-            }
-        }
-
-        async function focusModeOn() {
-            var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmRefs;
-            if (extensionAPI.settings.get("fm-title") == true) {
-                fmTitle = true;
-            } else {
-                fmTitle = false;
-            }
-            if (extensionAPI.settings.get("fm-topbar") == true) {
-                fmTopbar = true;
-            } else {
-                fmTopbar = false;
-            }
-            if (extensionAPI.settings.get("fm-leftSidebar") == true) {
-                fmLeftSidebar = true;
-            } else {
-                fmLeftSidebar = false;
-            }
-            if (extensionAPI.settings.get("fm-rightSidebar") == true) {
-                fmRightSidebar = true;
-            } else {
-                fmRightSidebar = false;
-            }
-            if (extensionAPI.settings.get("fm-refs") == true) {
-                fmRefs = true;
-            } else {
-                fmRefs = false;
-            }
-            if (fmTitle == true) {
-                document.querySelector(".rm-title-display").style.visibility = "hidden";
-            }
-            if (fmTopbar == false) {
-                document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "hidden";
-            }
-            if (fmLeftSidebar == false) {
-                document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "hidden";
-                document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "hidden";
-            }
-            if (fmRightSidebar == false) {
-                await roamAlphaAPI.ui.rightSidebar.close();
-            }
-            if (fmRefs == false) {
-                document.querySelector("div.rm-reference-main").style.visibility = "hidden";
-            }
-            var matches = document.querySelectorAll("div.roam-log-page");
-            for (var i = 1; i < matches.length; i++) {
-                matches[i].style.visibility = "hidden";
-            }
-            focusModeState = true;
-        }
-
-        async function focusModeOff() {
-            document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "visible";
-            document.querySelector("div.rm-reference-main").style.visibility = "visible";
-            document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "visible";
-            document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "visible";
-            document.querySelector(".rm-title-display").style.visibility = "visible";
-            var matches = document.querySelectorAll("div.roam-log-page");
-            for (var i = 1; i < matches.length; i++) {
-                matches[i].style.visibility = "visible";
-            }
-            focusModeState = false;
-        }
+        focusModeState = false;
     },
     onunload: () => {
-        focusModeOff();
         window.roamAlphaAPI.ui.commandPalette.removeCommand({
             label: 'Toggle Focus Mode'
         });
+        focusModeOff();
     }
+}
+
+function focusModeToggle({ extensionAPI }) {
+    if (focusModeState == false) {
+        focusModeOn({ extensionAPI });
+    } else {
+        focusModeOff();
+    }
+}
+
+async function focusModeOn({ extensionAPI }) {
+    var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmRefs;
+    if (extensionAPI.settings.get("fm-title") == true) {
+        fmTitle = true;
+    } else {
+        fmTitle = false;
+    }
+    if (extensionAPI.settings.get("fm-topbar") == true) {
+        fmTopbar = true;
+    } else {
+        fmTopbar = false;
+    }
+    if (extensionAPI.settings.get("fm-leftSidebar") == true) {
+        fmLeftSidebar = true;
+    } else {
+        fmLeftSidebar = false;
+    }
+    if (extensionAPI.settings.get("fm-rightSidebar") == true) {
+        fmRightSidebar = true;
+    } else {
+        fmRightSidebar = false;
+    }
+    if (extensionAPI.settings.get("fm-refs") == true) {
+        fmRefs = true;
+    } else {
+        fmRefs = false;
+    }
+    if (fmTitle == true) {
+        document.querySelector(".rm-title-display").style.visibility = "hidden";
+    }
+    if (fmTopbar == false) {
+        document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "hidden";
+    }
+    if (fmLeftSidebar == false) {
+        document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "hidden";
+        document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "hidden";
+    }
+    if (fmRightSidebar == false) {
+        await roamAlphaAPI.ui.rightSidebar.close();
+    }
+    if (fmRefs == false) {
+        document.querySelector("div.rm-reference-main").style.visibility = "hidden";
+    }
+    var matches = document.querySelectorAll("div.roam-log-page");
+    for (var i = 1; i < matches.length; i++) {
+        matches[i].style.visibility = "hidden";
+    }
+    focusModeState = true;
+}
+
+function focusModeOff() {
+    document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "visible";
+    document.querySelector("div.rm-reference-main").style.visibility = "visible";
+    document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "visible";
+    document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "visible";
+    document.querySelector(".rm-title-display").style.visibility = "visible";
+    var matches = document.querySelectorAll("div.roam-log-page");
+    for (var i = 1; i < matches.length; i++) {
+        matches[i].style.visibility = "visible";
+    }
+    focusModeState = false;
 }
