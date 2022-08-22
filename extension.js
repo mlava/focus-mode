@@ -31,6 +31,12 @@ const config = {
             description: "Don't hide References",
             action: { type: "switch" },
         },
+        {
+            id: "fm-search",
+            name: "Keep search box",
+            description: "Don't hide the search box",
+            action: { type: "switch" },
+        },
     ]
 };
 
@@ -61,7 +67,7 @@ function focusModeToggle({ extensionAPI }) {
 }
 
 async function focusModeOn({ extensionAPI }) {
-    var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmRefs;
+    var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmRefs, fmSearch;
     if (extensionAPI.settings.get("fm-title") == true) {
         fmTitle = true;
     } else {
@@ -87,12 +93,15 @@ async function focusModeOn({ extensionAPI }) {
     } else {
         fmRefs = false;
     }
+    if (extensionAPI.settings.get("fm-search") == true) {
+        fmSearch = true;
+    } else {
+        fmSearch = false;
+    }
     if (fmTitle == true) {
         document.querySelector(".rm-title-display").style.visibility = "hidden";
     }
-    if (fmTopbar == false) {
-        document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "hidden";
-    }
+
     if (fmLeftSidebar == false) {
         await roamAlphaAPI.ui.leftSidebar.close();
     }
@@ -106,6 +115,24 @@ async function focusModeOn({ extensionAPI }) {
     for (var i = 1; i < matches.length; i++) {
         matches[i].style.visibility = "hidden";
     }
+
+    var topBarDiv = document.querySelector(".rm-topbar");
+    var searchDiv = document.querySelector(".rm-find-or-create-wrapper");
+    await sleep(200);
+
+    if (fmTopbar == false) {
+        if (fmSearch == true) {
+            searchDiv.classList.add('fm-keepsearch');
+            topBarDiv.classList.add('fm-search');
+            searchDiv.classList.remove('fm-losesearch');
+            topBarDiv.classList.remove('fm-nosearch');
+        } else {
+            searchDiv.classList.add('fm-losesearch');
+            topBarDiv.classList.add('fm-nosearch');
+            topBarDiv.classList.remove('fm-search');
+            searchDiv.classList.remove('fm-keepsearch');
+        }
+    }
     focusModeState = true;
 }
 
@@ -115,10 +142,23 @@ async function focusModeOff() {
     document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "visible";
     document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "visible";
     document.querySelector(".rm-title-display").style.visibility = "visible";
+    
     var matches = document.querySelectorAll("div.roam-log-page");
     for (var i = 1; i < matches.length; i++) {
         matches[i].style.visibility = "visible";
     }
     await roamAlphaAPI.ui.leftSidebar.open();
+
+    var topBarDiv = document.querySelector('.rm-topbar');
+    var searchDiv = document.querySelector(".rm-find-or-create-wrapper");
+    await sleep(200);
+    topBarDiv.classList.remove('fm-nosearch');
+    topBarDiv.classList.remove('fm-search');
+    searchDiv.classList.remove('fm-losesearch');
+    searchDiv.classList.remove('fm-keepsearch');
     focusModeState = false;
+}
+
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
