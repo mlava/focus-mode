@@ -1,0 +1,19 @@
+.fm-search :not(.fm-keepsearch) {
+    visibility: hidden;
+}
+
+.fm-nosearch {
+    visibility: hidden !important;
+}
+
+.fm-losesearch > * {
+    visibility: hidden;
+}
+
+.fm-keepsearch * {
+    visibility: visible !important;
+}
+
+.fm-norefs * {
+    visibility: hidden !important;
+}

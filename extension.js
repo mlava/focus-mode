@@ -50,22 +50,40 @@ export default {
         });
         focusModeState = false;
 
-        document.addEventListener('keydown', keyboardToggle());
+        window.addEventListener('hashchange', async function (e) {
+            monitorPage({ extensionAPI });
+        });
 
-        function keyboardToggle(e) {
+        window.addEventListener('keydown', async function (e) {
             if (e.key.toLowerCase() === 'f' && e.shiftKey && e.altKey) {
-                focusModeToggle({ extensionAPI });
+                keyboardTrigger({ extensionAPI });
             }
-        }
+        });
     },
     onunload: () => {
         window.roamAlphaAPI.ui.commandPalette.removeCommand({
             label: 'Toggle Focus Mode'
         });
         focusModeOff();
-
-        document.removeEventListener('keydown', keyboardToggle());
     }
+}
+
+async function monitorPage({ extensionAPI }) {
+    var fmRefs;
+    if (extensionAPI.settings.get("fm-refs") == true) {
+        fmRefs = true;
+    } else {
+        fmRefs = false;
+    }
+    if (fmRefs == false) {
+        var referencesDiv = document.querySelector(".rm-reference-main");
+        await sleep(200);
+        referencesDiv.classList.add('fm-norefs');
+    }
+}
+
+async function keyboardTrigger({ extensionAPI }) {
+    focusModeToggle({ extensionAPI })
 }
 
 function focusModeToggle({ extensionAPI }) {
@@ -118,9 +136,6 @@ async function focusModeOn({ extensionAPI }) {
     if (fmRightSidebar == false) {
         await roamAlphaAPI.ui.rightSidebar.close();
     }
-    if (fmRefs == false) {
-        document.querySelector("div.rm-reference-main").style.visibility = "hidden";
-    }
     var matches = document.querySelectorAll("div.roam-log-page");
     for (var i = 1; i < matches.length; i++) {
         matches[i].style.visibility = "hidden";
@@ -128,6 +143,7 @@ async function focusModeOn({ extensionAPI }) {
 
     var topBarDiv = document.querySelector(".rm-topbar");
     var searchDiv = document.querySelector(".rm-find-or-create-wrapper");
+    var referencesDiv = document.querySelector(".rm-reference-main");
     await sleep(200);
 
     if (fmTopbar == false) {
@@ -142,6 +158,9 @@ async function focusModeOn({ extensionAPI }) {
             topBarDiv.classList.remove('fm-search');
             searchDiv.classList.remove('fm-keepsearch');
         }
+    }
+    if (fmRefs == false) {
+        referencesDiv.classList.add('fm-norefs');
     }
     focusModeState = true;
 }
@@ -161,11 +180,13 @@ async function focusModeOff() {
 
     var topBarDiv = document.querySelector('.rm-topbar');
     var searchDiv = document.querySelector(".rm-find-or-create-wrapper");
+    var referencesDiv = document.querySelector(".rm-reference-main");
     await sleep(200);
     topBarDiv.classList.remove('fm-nosearch');
     topBarDiv.classList.remove('fm-search');
     searchDiv.classList.remove('fm-losesearch');
     searchDiv.classList.remove('fm-keepsearch');
+    referencesDiv.classList.remove('fm-norefs');
     focusModeState = false;
 }
 
