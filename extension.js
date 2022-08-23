@@ -33,8 +33,8 @@ const config = {
         },
         {
             id: "fm-search",
-            name: "Keep search box",
-            description: "Don't hide the search box",
+            name: "Keep search intact",
+            description: "Don't hide the search box (and maintain access to CTRL-u search shortcut)",
             action: { type: "switch" },
         },
     ]
@@ -49,12 +49,22 @@ export default {
             callback: () => focusModeToggle({ extensionAPI })
         });
         focusModeState = false;
+
+        document.addEventListener('keydown', keyboardToggle());
+
+        function keyboardToggle(e) {
+            if (e.key.toLowerCase() === 'f' && e.shiftKey && e.altKey) {
+                focusModeToggle({ extensionAPI });
+            }
+        }
     },
     onunload: () => {
         window.roamAlphaAPI.ui.commandPalette.removeCommand({
             label: 'Toggle Focus Mode'
         });
         focusModeOff();
+
+        document.removeEventListener('keydown', keyboardToggle());
     }
 }
 
@@ -142,7 +152,7 @@ async function focusModeOff() {
     document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "visible";
     document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "visible";
     document.querySelector(".rm-title-display").style.visibility = "visible";
-    
+
     var matches = document.querySelectorAll("div.roam-log-page");
     for (var i = 1; i < matches.length; i++) {
         matches[i].style.visibility = "visible";
