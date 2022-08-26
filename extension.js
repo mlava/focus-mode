@@ -40,7 +40,10 @@ const config = {
     ]
 };
 
-var focusModeState;
+var focusModeState = false;
+let myEventHandler = undefined;
+let hashChange = undefined;
+
 export default {
     onload: ({ extensionAPI }) => {
         extensionAPI.settings.panel.create(config);
@@ -50,20 +53,33 @@ export default {
         });
         focusModeState = false;
 
-        window.addEventListener('hashchange', async function (e) {
+        hashChange = async (e) => {
+            console.info("hashchange");
             monitorPage({ extensionAPI });
-        });
+        };
+        window.addEventListener('hashchange', hashChange);
 
-        window.addEventListener('keydown', async function (e) {
+        myEventHandler=function(e){
             if (e.key.toLowerCase() === 'f' && e.shiftKey && e.altKey) {
-                keyboardTrigger({ extensionAPI });
+                focusModeToggle({ extensionAPI });
             }
-        });
+        }
+        window.addEventListener('keydown',myEventHandler, false);
     },
     onunload: () => {
         window.roamAlphaAPI.ui.commandPalette.removeCommand({
             label: 'Toggle Focus Mode'
         });
+        focusModeOff();
+        window.removeEventListener('hashchange', hashChange);
+        window.removeEventListener('keydown',myEventHandler, false);
+    }
+}
+
+function focusModeToggle({ extensionAPI }) {
+    if (focusModeState == false) {
+        focusModeOn({ extensionAPI });
+    } else {
         focusModeOff();
     }
 }
@@ -79,18 +95,6 @@ async function monitorPage({ extensionAPI }) {
         var referencesDiv = document.querySelector(".rm-reference-main");
         await sleep(200);
         referencesDiv.classList.add('fm-norefs');
-    }
-}
-
-async function keyboardTrigger({ extensionAPI }) {
-    focusModeToggle({ extensionAPI })
-}
-
-function focusModeToggle({ extensionAPI }) {
-    if (focusModeState == false) {
-        focusModeOn({ extensionAPI });
-    } else {
-        focusModeOff();
     }
 }
 
