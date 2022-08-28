@@ -85,12 +85,9 @@ function focusModeToggle({ extensionAPI }) {
 
 async function monitorPage({ extensionAPI }) {
     var fmRefs = true;
-    console.info(fmRefs);
     if (extensionAPI.settings.get("fm-refs") == false) {
         fmRefs = false;
     }
-    console.info(fmRefs);
-
     var referencesDiv = document.querySelector(".rm-reference-main");
     if (fmRefs == false) {
         await sleep(200);
