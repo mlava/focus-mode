@@ -54,7 +54,6 @@ export default {
         focusModeState = false;
 
         hashChange = async (e) => {
-            console.info("hashchange");
             monitorPage({ extensionAPI });
         };
         window.addEventListener('hashchange', hashChange);
@@ -85,21 +84,25 @@ function focusModeToggle({ extensionAPI }) {
 }
 
 async function monitorPage({ extensionAPI }) {
-    var fmRefs;
-    if (extensionAPI.settings.get("fm-refs") == true) {
-        fmRefs = true;
-    } else {
+    var fmRefs = true;
+    console.info(fmRefs);
+    if (extensionAPI.settings.get("fm-refs") == false) {
         fmRefs = false;
     }
+    console.info(fmRefs);
+
+    var referencesDiv = document.querySelector(".rm-reference-main");
     if (fmRefs == false) {
-        var referencesDiv = document.querySelector(".rm-reference-main");
         await sleep(200);
         referencesDiv.classList.add('fm-norefs');
+    } else if (fmRefs == true) {
+        await sleep(200);
+        referencesDiv.classList.remove('fm-norefs');
     }
 }
 
 async function focusModeOn({ extensionAPI }) {
-    var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmRefs, fmSearch;
+    var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs;
     if (extensionAPI.settings.get("fm-title") == true) {
         fmTitle = true;
     } else {
