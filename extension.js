@@ -1,69 +1,101 @@
-const config = {
-    tabTitle: "Focus Mode",
-    settings: [
-        {
-            id: "fm-title",
-            name: "Hide Page Title",
-            description: "Hide the Page Title",
-            action: { type: "switch" },
-        },
-        {
-            id: "fm-topbar",
-            name: "Show Topbar",
-            description: "Don't hide Topbar",
-            action: { type: "switch" },
-        },
-        {
-            id: "fm-leftSidebar",
-            name: "Show Left Sidebar",
-            description: "Don't hide Left Sidebar",
-            action: { type: "switch" },
-        },
-        {
-            id: "fm-rightSidebar",
-            name: "Show Right Sidebar",
-            description: "Don't hide Right Sidebar",
-            action: { type: "switch" },
-        },
-        {
-            id: "fm-refs",
-            name: "Show Linked and Unlinked References",
-            description: "Don't hide References",
-            action: { type: "switch" },
-        },
-        {
-            id: "fm-search",
-            name: "Keep search intact",
-            description: "Don't hide the search box (and maintain access to CTRL-u search shortcut)",
-            action: { type: "switch" },
-        },
-    ]
-};
-
 var focusModeState = false;
 let myEventHandler = undefined;
 let hashChange = undefined;
+var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs;
 
 export default {
     onload: ({ extensionAPI }) => {
+        const config = {
+            tabTitle: "Focus Mode",
+            settings: [
+                {
+                    id: "fm-title",
+                    name: "Hide Page Title",
+                    description: "Hide the Page Title",
+                    action: { type: "switch", onChange: (evt) => { fmTitle = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+                {
+                    id: "fm-topbar",
+                    name: "Show Topbar",
+                    description: "Don't hide Topbar",
+                    action: { type: "switch", onChange: (evt) => { fmTopbar = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+                {
+                    id: "fm-leftSidebar",
+                    name: "Show Left Sidebar",
+                    description: "Don't hide Left Sidebar",
+                    action: { type: "switch", onChange: (evt) => { fmLeftSidebar = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+                {
+                    id: "fm-rightSidebar",
+                    name: "Show Right Sidebar",
+                    description: "Don't hide Right Sidebar",
+                    action: { type: "switch", onChange: (evt) => { fmRightSidebar = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+                {
+                    id: "fm-refs",
+                    name: "Show Linked and Unlinked References",
+                    description: "Don't hide References",
+                    action: { type: "switch", onChange: (evt) => { fmRefs = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+                {
+                    id: "fm-search",
+                    name: "Keep search intact",
+                    description: "Don't hide the search box (and maintain access to CTRL-u search shortcut)",
+                    action: { type: "switch", onChange: (evt) => { fmSearch = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+            ]
+        };
         extensionAPI.settings.panel.create(config);
+
         window.roamAlphaAPI.ui.commandPalette.addCommand({
             label: "Toggle Focus Mode",
             callback: () => focusModeToggle({ extensionAPI })
         });
-        focusModeState = false;
+        focusModeState = false; //onload
 
         hashChange = async (e) => {
             monitorPage({ extensionAPI });
         };
         window.addEventListener('hashchange', hashChange);
 
-        myEventHandler=function(e){
+        myEventHandler = function (e) {
             if (e.key.toLowerCase() === 'f' && e.shiftKey && e.altKey) {
                 focusModeToggle({ extensionAPI });
             }
         }
-        window.addEventListener('keydown',myEventHandler, false);
+        window.addEventListener('keydown', myEventHandler, false);
+
+        if (extensionAPI.settings.get("fm-title") == true) { //onload set Settings values
+            fmTitle = true;
+        } else {
+            fmTitle = false;
+        }
+        if (extensionAPI.settings.get("fm-topbar") == true) {
+            fmTopbar = true;
+        } else {
+            fmTopbar = false;
+        }
+        if (extensionAPI.settings.get("fm-leftSidebar") == true) {
+            fmLeftSidebar = true;
+        } else {
+            fmLeftSidebar = false;
+        }
+        if (extensionAPI.settings.get("fm-rightSidebar") == true) {
+            fmRightSidebar = true;
+        } else {
+            fmRightSidebar = false;
+        }
+        if (extensionAPI.settings.get("fm-refs") == true) {
+            fmRefs = true;
+        } else {
+            fmRefs = false;
+        }
+        if (extensionAPI.settings.get("fm-search") == true) {
+            fmSearch = true;
+        } else {
+            fmSearch = false;
+        }
     },
     onunload: () => {
         window.roamAlphaAPI.ui.commandPalette.removeCommand({
@@ -71,7 +103,7 @@ export default {
         });
         focusModeOff();
         window.removeEventListener('hashchange', hashChange);
-        window.removeEventListener('keydown',myEventHandler, false);
+        window.removeEventListener('keydown', myEventHandler, false);
     }
 }
 
@@ -98,47 +130,22 @@ async function monitorPage({ extensionAPI }) {
     }
 }
 
-async function focusModeOn({ extensionAPI }) {
-    var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs;
-    if (extensionAPI.settings.get("fm-title") == true) {
-        fmTitle = true;
-    } else {
-        fmTitle = false;
-    }
-    if (extensionAPI.settings.get("fm-topbar") == true) {
-        fmTopbar = true;
-    } else {
-        fmTopbar = false;
-    }
-    if (extensionAPI.settings.get("fm-leftSidebar") == true) {
-        fmLeftSidebar = true;
-    } else {
-        fmLeftSidebar = false;
-    }
-    if (extensionAPI.settings.get("fm-rightSidebar") == true) {
-        fmRightSidebar = true;
-    } else {
-        fmRightSidebar = false;
-    }
-    if (extensionAPI.settings.get("fm-refs") == true) {
-        fmRefs = true;
-    } else {
-        fmRefs = false;
-    }
-    if (extensionAPI.settings.get("fm-search") == true) {
-        fmSearch = true;
-    } else {
-        fmSearch = false;
-    }
+async function focusModeOn() {
     if (fmTitle == true) {
         document.querySelector(".rm-title-display").style.visibility = "hidden";
+    } else {
+        document.querySelector(".rm-title-display").style.visibility = "visible";
     }
 
     if (fmLeftSidebar == false) {
         await roamAlphaAPI.ui.leftSidebar.close();
+    } else {
+        await roamAlphaAPI.ui.leftSidebar.open();
     }
     if (fmRightSidebar == false) {
         await roamAlphaAPI.ui.rightSidebar.close();
+    } else {
+        await roamAlphaAPI.ui.rightSidebar.open();
     }
     var matches = document.querySelectorAll("div.roam-log-page");
     for (var i = 1; i < matches.length; i++) {
@@ -162,9 +169,16 @@ async function focusModeOn({ extensionAPI }) {
             topBarDiv.classList.remove('fm-search');
             searchDiv.classList.remove('fm-keepsearch');
         }
+    } else {
+        topBarDiv.classList.remove('fm-nosearch');
+        topBarDiv.classList.remove('fm-search');
+        searchDiv.classList.remove('fm-losesearch');
+        searchDiv.classList.remove('fm-keepsearch');
     }
     if (fmRefs == false) {
         referencesDiv.classList.add('fm-norefs');
+    } else {
+        referencesDiv.classList.remove('fm-norefs');
     }
     focusModeState = true;
 }
