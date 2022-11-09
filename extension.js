@@ -1,7 +1,7 @@
 var focusModeState = false;
 let myEventHandler = undefined;
 let hashChange = undefined;
-var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs;
+var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs, fmFullscreen;
 
 export default {
     onload: ({ extensionAPI }) => {
@@ -43,6 +43,12 @@ export default {
                     name: "Keep search intact",
                     description: "Don't hide the search box (and maintain access to CTRL-u search shortcut)",
                     action: { type: "switch", onChange: (evt) => { fmSearch = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+                {
+                    id: "fm-fullscreen",
+                    name: "Go to full screen in focus mode",
+                    description: "Turn on to use full screen while in focus mode",
+                    action: { type: "switch", onChange: (evt) => { fmFullscreen = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
                 },
             ]
         };
@@ -95,6 +101,11 @@ export default {
             fmSearch = true;
         } else {
             fmSearch = false;
+        }
+        if (extensionAPI.settings.get("fm-fullscreen") == true) {
+            fmFullscreen = true;
+        } else {
+            fmFullscreen = false;
         }
     },
     onunload: () => {
@@ -180,6 +191,16 @@ async function focusModeOn() {
     } else {
         referencesDiv.classList.remove('fm-norefs');
     }
+    if (fmFullscreen == true) {
+        var elem = document.querySelector(".roam-article");
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+            elem.msRequestFullscreen();
+        }
+    }
     focusModeState = true;
 }
 
@@ -205,6 +226,14 @@ async function focusModeOff() {
     searchDiv.classList.remove('fm-losesearch');
     searchDiv.classList.remove('fm-keepsearch');
     referencesDiv.classList.remove('fm-norefs');
+
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE11 */
+        document.msExitFullscreen();
+    }
     focusModeState = false;
 }
 
