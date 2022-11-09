@@ -1,5 +1,8 @@
 Turn on focus mode to get real work done.
 
+**NEW:** 
+- fullscreen mode - turn your browser tab into a fullscreen view to minimise distractions even more!
+
 This extension hides the sidebars, topbar, linked references and more to allow you to focus only on the note you're working on.
 
 Turn on focus mode by opening Command Palette (CTRL-P) and choose Toggle Focus Mode. Turn off by choosing Toggle Focus Mode a second time.
