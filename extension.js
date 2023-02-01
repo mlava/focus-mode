@@ -227,12 +227,14 @@ async function focusModeOff() {
     searchDiv.classList.remove('fm-keepsearch');
     referencesDiv.classList.remove('fm-norefs');
 
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) { /* Safari */
-        document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) { /* IE11 */
-        document.msExitFullscreen();
+    if (document.fullscreenElement != null) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+        }
     }
     focusModeState = false;
 }
