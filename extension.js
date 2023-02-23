@@ -54,7 +54,7 @@ export default {
         };
         extensionAPI.settings.panel.create(config);
 
-        window.roamAlphaAPI.ui.commandPalette.addCommand({
+        extensionAPI.ui.commandPalette.addCommand({
             label: "Toggle Focus Mode",
             callback: () => focusModeToggle({ extensionAPI })
         });
@@ -64,13 +64,15 @@ export default {
             monitorPage({ extensionAPI });
         };
         window.addEventListener('hashchange', hashChange);
-
+        
+        /*
         myEventHandler = function (e) {
             if (e.key.toLowerCase() === 'f' && e.shiftKey && e.altKey) {
                 focusModeToggle({ extensionAPI });
             }
         }
         window.addEventListener('keydown', myEventHandler, false);
+        */
 
         if (extensionAPI.settings.get("fm-title") == true) { //onload set Settings values
             fmTitle = true;
@@ -109,9 +111,6 @@ export default {
         }
     },
     onunload: () => {
-        window.roamAlphaAPI.ui.commandPalette.removeCommand({
-            label: 'Toggle Focus Mode'
-        });
         focusModeOff();
         window.removeEventListener('hashchange', hashChange);
         window.removeEventListener('keydown', myEventHandler, false);
@@ -135,11 +134,9 @@ async function monitorPage({ extensionAPI }) {
     if (fmRefs == false) {
         await sleep(200);
         referencesDiv.classList.add('fm-norefs');
-    } else if (fmRefs == true && referencesDiv.hasOwnProperty("classList")) {
-        if (referencesDiv.classList.contains("fm-norefs")) {
-            await sleep(200);
-            referencesDiv.classList.remove('fm-norefs');
-        }
+    } else if (fmRefs == true) {
+        await sleep(200);
+        referencesDiv.classList.remove('fm-norefs');
     }
 }
 
