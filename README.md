@@ -1,13 +1,14 @@
 Turn on focus mode to get real work done.
 
-**NEW:** 
+**NEW:**
+- Now compatible with the new user-defined hotkeys function - see Hotkeys option in Roam Research Settings
 - fullscreen mode - turn your browser tab into a fullscreen view to minimise distractions even more!
 
 This extension hides the sidebars, topbar, linked references and more to allow you to focus only on the note you're working on.
 
 Turn on focus mode by opening Command Palette (CTRL-P) and choose Toggle Focus Mode. Turn off by choosing Toggle Focus Mode a second time.
 
-You can also trigger the Toggle Focus Mode command using a keyboard short: ```shift-alt-f```
+You can also trigger the Toggle Focus Mode command using a keyboard hotkey: access this in the Roam Research Settings > Hotkeys page.
 
 ![focus-mode](https://user-images.githubusercontent.com/6857790/185523589-833a1b8c-59e7-4dfb-9824-a88245deb064.gif)
 
@@ -21,7 +22,7 @@ Steps:
 ### Note regarding search:
 In order to maintain access to the Roam Research search menu and keyboard shortcut (CTRL-u) you can turn on 'Keep search intact' in the Roam Depot settings menu for Focus Mode. With this switch turned off the search box and keyboard shortcut will be unavailable (which might be your preference).
 
-If you wish to keep access to search but hide the search box until it is needed, consider applying Alex Rank's center search in your roam/css.
+If you wish to keep access to search but hide the search box until it is needed, consider applying Alex Rink's center search in your roam/css.
 
 ```@import url(https://rcvd.github.io/roam-css-system/modules/centered-search.css);```
 
