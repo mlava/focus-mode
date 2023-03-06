@@ -134,7 +134,7 @@ async function monitorPage({ extensionAPI }) {
     if (fmRefs == false) {
         await sleep(200);
         referencesDiv.classList.add('fm-norefs');
-    } else if (fmRefs == true) {
+    } else if (fmRefs == true && referencesDiv != null && referencesDiv.hasOwnProperty("classList")) {
         await sleep(200);
         referencesDiv.classList.remove('fm-norefs');
     }
