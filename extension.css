@@ -17,3 +17,11 @@
 .fm-norefs * {
     visibility: hidden !important;
 }
+
+.fm-hideTitle {
+    visibility: hidden !important;
+}
+
+.fm-hideBreadcrumbs {
+    visibility: hidden !important;
+}

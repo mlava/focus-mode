@@ -1,7 +1,6 @@
 var focusModeState = false;
-let myEventHandler = undefined;
 let hashChange = undefined;
-var fmTitle, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs, fmFullscreen;
+var fmTitle, fmBreadcrumbs, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs, fmFullscreen;
 
 export default {
     onload: ({ extensionAPI }) => {
@@ -13,6 +12,12 @@ export default {
                     name: "Hide Page Title",
                     description: "Hide the Page Title",
                     action: { type: "switch", onChange: (evt) => { fmTitle = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
+                },
+                {
+                    id: "fm-breadcrumbs",
+                    name: "Hide breadcrumb navigation",
+                    description: "Hide breadcrumb navigation",
+                    action: { type: "switch", onChange: (evt) => { fmBreadcrumbs = evt.target.checked; if (focusModeState) { focusModeOn(); } } },
                 },
                 {
                     id: "fm-topbar",
@@ -64,20 +69,16 @@ export default {
             monitorPage({ extensionAPI });
         };
         window.addEventListener('hashchange', hashChange);
-        
-        /*
-        myEventHandler = function (e) {
-            if (e.key.toLowerCase() === 'f' && e.shiftKey && e.altKey) {
-                focusModeToggle({ extensionAPI });
-            }
-        }
-        window.addEventListener('keydown', myEventHandler, false);
-        */
 
         if (extensionAPI.settings.get("fm-title") == true) { //onload set Settings values
             fmTitle = true;
         } else {
             fmTitle = false;
+        }
+        if (extensionAPI.settings.get("fm-breadcrumbs") == true) {
+            fmBreadcrumbs = true;
+        } else {
+            fmBreadcrumbs = false;
         }
         if (extensionAPI.settings.get("fm-topbar") == true) {
             fmTopbar = true;
@@ -113,7 +114,6 @@ export default {
     onunload: () => {
         focusModeOff();
         window.removeEventListener('hashchange', hashChange);
-        window.removeEventListener('keydown', myEventHandler, false);
     }
 }
 
@@ -141,12 +141,22 @@ async function monitorPage({ extensionAPI }) {
 }
 
 async function focusModeOn() {
-    if (fmTitle == true) {
-        document.querySelector(".rm-title-display").style.visibility = "hidden";
-    } else {
-        document.querySelector(".rm-title-display").style.visibility = "visible";
+    var titleDiv = document.querySelector(".rm-title-display");
+    if (titleDiv) {
+        if (fmTitle == true) {
+            titleDiv.classList.add('fm-hideTitle');
+        } else {
+            titleDiv.classList.remove('fm-hideTitle');
+        }
     }
-
+    var breadcrumbsDiv = document.querySelector(".zoom-path-view");
+    if (breadcrumbsDiv) {
+        if (fmBreadcrumbs == true) {
+            breadcrumbsDiv.classList.add('fm-hideBreadcrumbs');
+        } else {
+            breadcrumbsDiv.classList.remove('fm-hideBreadcrumbs');
+        }
+    }
     if (fmLeftSidebar == false) {
         await roamAlphaAPI.ui.leftSidebar.close();
     } else {
@@ -204,11 +214,18 @@ async function focusModeOn() {
 }
 
 async function focusModeOff() {
+    var titleDiv = document.querySelector(".rm-title-display");
+    var breadcrumbsDiv = document.querySelector(".zoom-path-view");
+    if (titleDiv) {
+        titleDiv.classList.remove('fm-hideTitle');
+    }
+    if (breadcrumbsDiv) {
+        breadcrumbsDiv.classList.remove('fm-hideBreadcrumbs');
+    }
     document.querySelector("#app > div > div > div.flex-h-box > div.roam-main > div.rm-files-dropzone > div").style.visibility = "visible";
     document.querySelector("div.rm-reference-main").style.visibility = "visible";
     document.querySelector(".roam-body .roam-app .roam-sidebar-container .roam-sidebar-content").style.visibility = "visible";
     document.querySelector(".roam-body .roam-app .roam-sidebar-container").style.visibility = "visible";
-    document.querySelector(".rm-title-display").style.visibility = "visible";
 
     var matches = document.querySelectorAll("div.roam-log-page");
     for (var i = 1; i < matches.length; i++) {
