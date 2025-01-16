@@ -1,6 +1,7 @@
 Turn on focus mode to get real work done.
 
 **NEW:**
+- fixed compatibility with Roam Studio for fullscreen
 - Now compatible with the new user-defined hotkeys function - see Hotkeys option in Roam Research Settings
 - fullscreen mode - turn your browser tab into a fullscreen view to minimise distractions even more!
 
