@@ -5,7 +5,7 @@ export default {
         var fmTitle, fmBreadcrumbs, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs, fmFullscreen;
 
         const config = {
-            tabTitle: "Focus Mode",
+            tabTitle: "Focus Mode Extended",
             settings: [
                 {
                     id: "fm-title",
