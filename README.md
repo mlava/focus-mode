@@ -3,8 +3,6 @@ Turn on focus mode to get real work done.
 **NEW:**
 - Roam Research has implemented a native Focus Mode called Zen Mode. You can find this via Command Palette. This extension is still useful, however, if you want to control the various items to display or hide. 
 - fixed compatibility with Roam Studio for fullscreen
-- Now compatible with the new user-defined hotkeys function - see Hotkeys option in Roam Research Settings
-- fullscreen mode - turn your browser tab into a fullscreen view to minimise distractions even more!
 
 This extension hides the sidebars, topbar, linked references and more to allow you to focus only on the note you're working on.
 
