@@ -118,6 +118,22 @@ export default {
             }
         }
 
+        // expose simple API for other extensions (e.g., Workspaces)
+        window.extendedFocusMode = {
+            isOn: () => focusModeState,
+            toggle: async (targetOn) => {
+                if (targetOn === true) {
+                    await focusModeOn();
+                    return;
+                }
+                if (targetOn === false) {
+                    await focusModeOff();
+                    return;
+                }
+                await focusModeToggle();
+            }
+        };
+
         async function monitorPage() {
             var fmRefs = true;
             if (extensionAPI.settings.get("fm-refs") == false) {
@@ -292,6 +308,9 @@ export default {
     onunload: () => {
         focusModeOff();
         window.removeEventListener('hashchange', hashChange);
+        if (window.extendedFocusMode) {
+            delete window.extendedFocusMode;
+        }
     }
 }
 

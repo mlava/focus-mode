@@ -1,6 +1,7 @@
 Turn on focus mode to get real work done.
 
 **NEW:**
+- Expose Extended Focus Mode state and toggle as API to allow Workspaces extension to define truly dynamic workspaces.
 - Roam Research has implemented a native Focus Mode called Zen Mode. You can find this via Command Palette. This extension is still useful, however, if you want to control the various items to display or hide. 
 - fixed compatibility with Roam Studio for fullscreen
 
