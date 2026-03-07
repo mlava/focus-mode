@@ -1,7 +1,11 @@
+var focusModeState = false;
+let hashChange = undefined;
+let focusModeOn = null;
+let focusModeOff = null;
+let focusModeToggle = null;
+
 export default {
     onload: ({ extensionAPI }) => {
-        var focusModeState = false;
-        let hashChange = undefined;
         var fmTitle, fmBreadcrumbs, fmTopbar, fmLeftSidebar, fmRightSidebar, fmSearch, fmRefs, fmFullscreen;
 
         const config = {
@@ -110,13 +114,13 @@ export default {
             fmFullscreen = false;
         }
 
-        async function focusModeToggle() {
+        focusModeToggle = async function focusModeToggle() {
             if (focusModeState == false) {
                 focusModeOn();
             } else {
                 focusModeOff();
             }
-        }
+        };
 
         // expose simple API for other extensions (e.g., Workspaces)
         window.extendedFocusMode = {
@@ -134,6 +138,51 @@ export default {
             }
         };
 
+        // Extension Tools API for orchestrator discovery (e.g., Chief of Staff)
+        window.RoamExtensionTools = window.RoamExtensionTools || {};
+        window.RoamExtensionTools["focus-mode"] = {
+            name: "Focus Mode",
+            version: "1.0",
+            tools: [
+                {
+                    name: "fm_get_state",
+                    description: "Check whether Focus Mode is currently active.",
+                    readOnly: true,
+                    parameters: { type: "object", properties: {} },
+                    execute: async () => ({ active: focusModeState }),
+                },
+                {
+                    name: "fm_toggle",
+                    description: "Turn Focus Mode on or off. Omit state to toggle.",
+                    readOnly: true,
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            state: {
+                                type: "string",
+                                enum: ["on", "off"],
+                                description: "Force a specific state. Omit to toggle.",
+                            },
+                        },
+                    },
+                    execute: async ({ state } = {}) => {
+                        try {
+                            if (state === "on") {
+                                await focusModeOn();
+                            } else if (state === "off") {
+                                await focusModeOff();
+                            } else {
+                                await focusModeToggle();
+                            }
+                            return { active: focusModeState };
+                        } catch (e) {
+                            return { error: e.message || "fm_toggle failed" };
+                        }
+                    },
+                },
+            ],
+        };
+
         async function monitorPage() {
             var fmRefs = true;
             if (extensionAPI.settings.get("fm-refs") == false) {
@@ -149,7 +198,7 @@ export default {
             }
         }
 
-        async function focusModeOn() {
+        focusModeOn = async function focusModeOn() {
             var titleDiv = document.querySelector(".rm-title-display");
             if (titleDiv) {
                 if (fmTitle == true) {
@@ -256,9 +305,9 @@ export default {
                 }
             }
             focusModeState = true;
-        }
+        };
 
-        async function focusModeOff() {
+        focusModeOff = async function focusModeOff() {
             var titleDiv = document.querySelector(".rm-title-display");
             var breadcrumbsDiv = document.querySelector(".zoom-path-view");
             if (titleDiv) {
@@ -303,7 +352,7 @@ export default {
                 head.removeChild(cssStyles);
             }
             focusModeState = false;
-        }
+        };
     },
     onunload: () => {
         focusModeOff();
@@ -311,6 +360,7 @@ export default {
         if (window.extendedFocusMode) {
             delete window.extendedFocusMode;
         }
+        delete window.RoamExtensionTools?.["focus-mode"];
     }
 }
 
